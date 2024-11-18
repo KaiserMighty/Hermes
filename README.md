@@ -22,14 +22,16 @@ w - Move up one directory to the parent.
 ## Installation
 Run these commands to install Hermes:
 ```
-./install.sh
+chmod +x install.sh
+sudo bash install.sh
 source ~/.bashrc
 ```
 
 ## Uninstallation
 Run these commands to uninstall Hermes:
 ```
-./uninstall.sh
+chmod +x uninstall.sh
+sudo bash uninstall.sh
 source ~/.bashrc
 ```
 

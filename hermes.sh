@@ -1,6 +1,6 @@
 #!/bin/bash
 
-./hermes
+hermes
 new_dir=$(cat /tmp/hermes_output.txt)
 rm /tmp/hermes_output.txt
 if [ -d "$new_dir" ]; then

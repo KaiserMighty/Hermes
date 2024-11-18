@@ -24,6 +24,8 @@ mv "$EXECUTABLE" "$INSTALL_PATH/"
 echo "Moved compiled executable to $INSTALL_PATH."
 cp "$SCRIPT_FILE" "$SCRIPT_INSTALL_PATH"
 echo "Copied $SCRIPT_FILE to $SCRIPT_INSTALL_PATH."
+chmod +x "$SCRIPT_INSTALL_PATH"
+echo "Made $SCRIPT_INSTALL_PATH executable."
 
 if ! grep -q "hermes()" ~/.bashrc; then
     echo "Adding hermes function definition to ~/.bashrc..."
@@ -32,8 +34,7 @@ else
     echo "Function for hermes already exists in ~/.bashrc. Skipping..."
 fi
 
-echo "To apply the isntallation changes, run the following command:"
+echo "To apply the installation changes, run the following command:"
 echo "source ~/.bashrc"
-echo "Now you can run the navigator by typing 'hermes' in the terminal."
 
 exit 0

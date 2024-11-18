@@ -128,7 +128,7 @@ void display_items(char **dirs, char **files, int dir_count, int file_count, int
     system("clear");
     printf("Hermes Navigator:\n");
 
-    char cwd[PATH_MAX];
+    char cwd[MAX_NAME_LEN];
     if (getcwd(cwd, sizeof(cwd)) != NULL)
         printf("%s\n\n", cwd);
 
@@ -261,6 +261,16 @@ int main()
         {
             case EXIT_KEY:
                 free_memory(dirs, files, dir_count, file_count);
+                char cwd[MAX_NAME_LEN];
+                if (getcwd(cwd, sizeof(cwd)) != NULL)
+                {
+                    FILE *file = fopen("/tmp/hermes_output.txt", "w");
+                    if (file)
+                    {
+                        fprintf(file, "%s\n", cwd);
+                        fclose(file);
+                    }   
+                }
                 system("tput rmcup");
                 return 0;
 
