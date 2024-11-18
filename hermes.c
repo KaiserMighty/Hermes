@@ -5,11 +5,19 @@
 #include <unistd.h>
 #include <termios.h>
 
-#define PAGE_SIZE 20
 #define MAX_NAME_LEN 256
 #define MAX_DISPLAY_LEN 40
 
-const char dir_keys[] = "ertyuiopasdfghjklzxc";
+#define COLUMN_WIDTH 50
+#define PAGE_SIZE 20
+
+#define NAV_KEYMAP "ertyuiopasdfghjklzxc"
+#define EXIT_KEY 'q'
+#define PARENT_KEY 'w'
+#define PREV_PAGE_DIR_KEY '['
+#define NEXT_PAGE_DIR_KEY ']'
+#define PREV_PAGE_FILE_KEY ';'
+#define NEXT_PAGE_FILE_KEY '\''
 
 char getch()
 {
@@ -124,8 +132,8 @@ void display_items(char **dirs, char **files, int dir_count, int file_count, int
     if (getcwd(cwd, sizeof(cwd)) != NULL)
         printf("%s\n\n", cwd);
 
-    printf("%c) %-50s", 'q', "Exit Here");
-    printf("%c) %s\n", 'w', "Parent Directory");
+    printf("%c) %-50s", EXIT_KEY, "Exit Here");
+    printf("%c) %s\n", PARENT_KEY, "Parent Directory");
 
     // Print Directories
     int dir_start_index = dir_page * PAGE_SIZE;
@@ -134,12 +142,12 @@ void display_items(char **dirs, char **files, int dir_count, int file_count, int
     for (int i = dir_start_index; i < dir_count && i < dir_end_index; i++)
     {
         int key_index = i - dir_start_index;
-        if (key_index < strlen(dir_keys))
+        if (key_index < strlen(NAV_KEYMAP))
         {
             if (key_index % 2 == 0)
-                printf("%c) %-50s", dir_keys[key_index], dirs[i]);
+                printf("%c) %-*s", NAV_KEYMAP[key_index], COLUMN_WIDTH, dirs[i]);
             else
-                printf("%c) %s\n", dir_keys[key_index], dirs[i]);
+                printf("%c) %s\n", NAV_KEYMAP[key_index], dirs[i]);
         }
         dir_print_count++;
     }
@@ -148,7 +156,7 @@ void display_items(char **dirs, char **files, int dir_count, int file_count, int
     for (int i = dir_print_count; i < PAGE_SIZE; i++)
     {
         if (i % 2 == 0)
-            printf("%-53s", " ");
+            printf("%-*s", COLUMN_WIDTH, " ");
         else
             printf("\n");
     }
@@ -158,14 +166,14 @@ void display_items(char **dirs, char **files, int dir_count, int file_count, int
     if (dir_start_index > 0)
     {
         print_offset_flag_dir = 1;
-        printf("%c) %-50s", '[', "Previous Page");
+        printf("%c) %-*s", PREV_PAGE_DIR_KEY, COLUMN_WIDTH, "Previous Page");
     }
     if (dir_end_index < dir_count)
     {
         if (print_offset_flag_dir == 1)
-            printf("%c) %s", ']', "Next Page");
+            printf("%c) %s", NEXT_PAGE_DIR_KEY, "Next Page");
         else
-            printf("%c) %-50s", ']', "Next Page");
+            printf("%c) %-*s", NEXT_PAGE_DIR_KEY, COLUMN_WIDTH, "Next Page");
     }
     printf("\n\n"); // Arbitrary Spacing
 
@@ -176,7 +184,7 @@ void display_items(char **dirs, char **files, int dir_count, int file_count, int
     for (int i = file_start_index; i < file_count && i < file_end_index; i++)
     {
         if (i % 2 == 0)
-            printf("%-53s", files[i]);
+            printf("%-*s", COLUMN_WIDTH+3, files[i]);
         else
             printf("%s\n", files[i]);
         file_print_count++;
@@ -186,7 +194,7 @@ void display_items(char **dirs, char **files, int dir_count, int file_count, int
     for (int i = file_print_count; i < PAGE_SIZE; i++)
     {
         if (i % 2 == 0)
-            printf("%-53s", " ");
+            printf("%-*s", COLUMN_WIDTH, " ");
         else
             printf("\n");
     }
@@ -196,24 +204,24 @@ void display_items(char **dirs, char **files, int dir_count, int file_count, int
     if (file_start_index > 0)
     {
         print_offset_flag_file = 1;
-        printf("%c) %-50s", ';', "Previous Page");
+        printf("%c) %-*s", PREV_PAGE_FILE_KEY, COLUMN_WIDTH, "Previous Page");
     }
     if (file_end_index < file_count)
     {
         if (print_offset_flag_file == 1)
-            printf("%c) %s", '\'', "Next Page");
+            printf("%c) %s", NEXT_PAGE_FILE_KEY, "Next Page");
         else
-            printf("%c) %-50s", '\'', "Next Page");
+            printf("%c) %-*s", NEXT_PAGE_FILE_KEY, COLUMN_WIDTH, "Next Page");
     }
     printf("\n"); // Arbitrary Spacing
 }
 
 int navigate_to_directory(char **dirs, int dir_count, char choice)
 {
-    int max_keys = strlen(dir_keys);
+    int max_keys = strlen(NAV_KEYMAP);
     for (int i = 0; i < dir_count && i < max_keys; i++)
     {
-        if (choice == dir_keys[i])
+        if (choice == NAV_KEYMAP[i])
         {
             if (chdir(dirs[i]) != 0)
             {
@@ -251,12 +259,12 @@ int main()
 
         switch (choice)
         {
-            case 'q':
+            case EXIT_KEY:
                 free_memory(dirs, files, dir_count, file_count);
                 system("tput rmcup");
                 return 0;
 
-            case 'w':
+            case PARENT_KEY:
                 if (chdir("..") != 0)
                 {
                     perror("chdir");
@@ -268,22 +276,22 @@ int main()
                 file_page = 0;
                 break;
 
-            case '[':
+            case PREV_PAGE_DIR_KEY:
                 if (dir_page > 0)
                     dir_page--;
                 break;
 
-            case ']':
+            case NEXT_PAGE_DIR_KEY:
                 if ((dir_page + 1) * PAGE_SIZE < dir_count)
                     dir_page++;
                 break;
 
-            case ';':
+            case PREV_PAGE_FILE_KEY:
                 if (file_page > 0)
                     file_page--;
                 break;
 
-            case '\'':
+            case NEXT_PAGE_FILE_KEY:
                 if ((file_page + 1) * PAGE_SIZE < file_count)
                     file_page++;
                 break;

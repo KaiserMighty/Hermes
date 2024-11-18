@@ -37,4 +37,19 @@ source ~/.bashrc
 If you wish to change the spacing between contents or even the controls of the program, you can edit the defines at the top of `hermes.c`.  
 Running the installation commands after any edits will automatically compile and place the edited program in the correct locations such that you can start using it right away.
 
+Here is a description of all defines at the top of the source file:
+```
+MAX_NAME_LEN       - The internal max length the program uses, must be larger than MAX_DISPLAY_LEN.
+MAX_DISPLAY_LEN    - The max length of any item displayed, items with logner names will be truncated.
+COLUMN_WIDTH       - The spacing between the output columns, should be larger than MAX_DISPLAY_LEN.
+PAGE_SIZE          - The number of items to display per page, should be an even number.
+NAV_KEYMAP         - All the keys used for navigating, the length of this must match PAGE_SIZE.
+EXIT_KEY           - The key used to exit the program at the current directory.
+PARENT_KEY         - The key used to move up one directory, to the parent directory.
+PREV_PAGE_DIR_KEY  - The key used to display the previous page of directories.
+NEXT_PAGE_DIR_KEY  - The key used to display the next page of directories.
+PREV_PAGE_FILE_KEY - The key used to display the previous page of files.
+NEXT_PAGE_FILE_KEY - The key used to display the next page of files.
+```
+
 ## Demonstration
