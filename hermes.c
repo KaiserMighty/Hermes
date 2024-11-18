@@ -40,9 +40,7 @@ int get_items(char dirs[][MAX_NAME_LEN], char files[][MAX_NAME_LEN], int *file_c
 
     dp = opendir(".");
     if (dp == NULL)
-    {
         return -1;
-    }
 
     while ((entry = readdir(dp)) != NULL)
     {
