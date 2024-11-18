@@ -91,13 +91,9 @@ void display_items(char dirs[][MAX_NAME_LEN], char files[][MAX_NAME_LEN], int di
     for (int i = dir_start_index; i < dir_count && i < dir_end_index; i++)
     {
         if (i % 2 == 0)
-        {
             printf("%-1c) %-50s", dir_keys[i], dirs[i]);
-        }
         else
-        {
             printf("%-1c) %s\n", dir_keys[i], dirs[i]);
-        }
     }
 
     if (dir_start_index > 0)
@@ -115,13 +111,9 @@ void display_items(char dirs[][MAX_NAME_LEN], char files[][MAX_NAME_LEN], int di
     for (int i = file_start_index; i < file_count && i < file_end_index; i++)
     {
         if (i % 2 == 0)
-        {
             printf("%-53s", files[i]);
-        }
         else
-        {
             printf("%s\n", files[i]);
-        }
     }
 
     if (file_start_index > 0)
