@@ -9,6 +9,8 @@
 #define MAX_NAME_LEN 256
 #define MAX_DISPLAY_LEN 40
 
+const char dir_keys[] = "ertyuiopasdfghjklzxc";
+
 char getch()
 {
     struct termios oldt, newt;
@@ -60,10 +62,14 @@ int get_items(char ***dirs, char ***files, int *dir_count, int *file_count)
     *file_count = 0;
     dp = opendir(".");
     if (dp == NULL)
+    {
+        perror("opendir");
         return -1;
+    }
 
     while ((entry = readdir(dp)) != NULL)
     {
+        // Get Directories
         if (entry->d_type == DT_DIR && strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0)
         {
             if (*dir_count >= dir_capacity)
@@ -83,6 +89,7 @@ int get_items(char ***dirs, char ***files, int *dir_count, int *file_count)
             truncate_name((*dirs)[*dir_count]);
             (*dir_count)++;
         }
+        // Get Files
         else if (entry->d_type == DT_REG)
         {
             if (*file_count >= file_capacity)
@@ -117,52 +124,94 @@ void display_items(char **dirs, char **files, int dir_count, int file_count, int
     if (getcwd(cwd, sizeof(cwd)) != NULL)
         printf("%s\n\n", cwd);
 
-    printf("%-1s) %-50s", "q", "Exit Here");
-    printf("%-1s) %s\n", "w", "Parent Directory");
+    printf("%c) %-50s", 'q', "Exit Here");
+    printf("%c) %s\n", 'w', "Parent Directory");
 
-    const char dir_keys[] = "ertyuioasdfghjklzxcvbn";
+    // Print Directories
     int dir_start_index = dir_page * PAGE_SIZE;
     int dir_end_index = dir_start_index + PAGE_SIZE;
-
+    int dir_print_count = 0;
     for (int i = dir_start_index; i < dir_count && i < dir_end_index; i++)
     {
-        if (i % 2 == 0)
-            printf("%-1c) %-50s", dir_keys[i], dirs[i]);
-        else
-            printf("%-1c) %s\n", dir_keys[i], dirs[i]);
+        int key_index = i - dir_start_index;
+        if (key_index < strlen(dir_keys))
+        {
+            if (key_index % 2 == 0)
+                printf("%c) %-50s", dir_keys[key_index], dirs[i]);
+            else
+                printf("%c) %s\n", dir_keys[key_index], dirs[i]);
+        }
+        dir_print_count++;
     }
 
+    // Print Spacing Between Directories and Files
+    for (int i = dir_print_count; i < PAGE_SIZE; i++)
+    {
+        if (i % 2 == 0)
+            printf("%-53s", " ");
+        else
+            printf("\n");
+    }
+
+    // Print Directory Page Keys
+    int print_offset_flag_dir = 0;
     if (dir_start_index > 0)
-        printf("m) Previous Page\n");
-
+    {
+        print_offset_flag_dir = 1;
+        printf("%c) %-50s", '[', "Previous Page");
+    }
     if (dir_end_index < dir_count)
-        printf(",) Next Page\n");
+    {
+        if (print_offset_flag_dir == 1)
+            printf("%c) %s", ']', "Next Page");
+        else
+            printf("%c) %-50s", ']', "Next Page");
+    }
+    printf("\n\n"); // Arbitrary Spacing
 
-    for (int i = 0; i < (12 - dir_count/2); i++)
-        printf("\n");
-
+    // Print Files
     int file_start_index = file_page * PAGE_SIZE;
     int file_end_index = file_start_index + PAGE_SIZE;
-
+    int file_print_count = 0;
     for (int i = file_start_index; i < file_count && i < file_end_index; i++)
     {
         if (i % 2 == 0)
             printf("%-53s", files[i]);
         else
             printf("%s\n", files[i]);
+        file_print_count++;
     }
 
-    if (file_start_index > 0)
-        printf(".) Previous Page\n");
+    // Print Spacing Between Files and Ending
+    for (int i = file_print_count; i < PAGE_SIZE; i++)
+    {
+        if (i % 2 == 0)
+            printf("%-53s", " ");
+        else
+            printf("\n");
+    }
 
+    // Print File Page Keys
+    int print_offset_flag_file = 0;
+    if (file_start_index > 0)
+    {
+        print_offset_flag_file = 1;
+        printf("%c) %-50s", ';', "Previous Page");
+    }
     if (file_end_index < file_count)
-        printf("/) Next Page\n");
+    {
+        if (print_offset_flag_file == 1)
+            printf("%c) %s", '\'', "Next Page");
+        else
+            printf("%c) %-50s", '\'', "Next Page");
+    }
+    printf("\n"); // Arbitrary Spacing
 }
 
 int navigate_to_directory(char **dirs, int dir_count, char choice)
 {
-    const char dir_keys[] = "ertyuioasdfghjklzxcvbn";
-    for (int i = 0; i < dir_count; i++)
+    int max_keys = strlen(dir_keys);
+    for (int i = 0; i < dir_count && i < max_keys; i++)
     {
         if (choice == dir_keys[i])
         {
@@ -211,7 +260,7 @@ int main()
                 if (chdir("..") != 0)
                 {
                     perror("chdir");
-                    return -2;
+                    return -1;
                 }
                 free_memory(dirs, files, dir_count, file_count);
                 get_items(&dirs, &files, &dir_count, &file_count);
@@ -219,24 +268,24 @@ int main()
                 file_page = 0;
                 break;
 
-            case '.':
-                if (file_page > 0)
-                    file_page--;
-                break;
-
-            case '/':
-                if ((file_page + 1) * PAGE_SIZE < file_count)
-                    file_page++;
-                break;
-
-            case 'm':
+            case '[':
                 if (dir_page > 0)
                     dir_page--;
                 break;
 
-            case ',':
+            case ']':
                 if ((dir_page + 1) * PAGE_SIZE < dir_count)
                     dir_page++;
+                break;
+
+            case ';':
+                if (file_page > 0)
+                    file_page--;
+                break;
+
+            case '\'':
+                if ((file_page + 1) * PAGE_SIZE < file_count)
+                    file_page++;
                 break;
 
             default:
