@@ -171,49 +171,52 @@ int main()
         display_items(dirs, files, total_dirs, file_count, dir_page, file_page);
         char choice = getch();
 
-        if (choice == 'q')
-            break;
+        switch (choice)
+        {
+            case 'q':
+                system("tput rmcup");
+                return 0;
 
-        if (choice == 'w')
-        {
-            if (chdir("..") != 0)
-            {
-                perror("chdir");
-                return -2;
-            }
-            total_dirs = get_items(dirs, files, &file_count);
-            dir_page = 0;
-            file_page = 0;
-        }
-        else if (choice == '.')
-        {
-            if (file_page > 0)
-                file_page--;
-        }
-        else if (choice == '/')
-        {
-            if ((file_page + 1) * MAX_ITEMS < file_count)
-                file_page++;
-        }
-        else if (choice == 'm')
-        {
-            if (dir_page > 0)
-                dir_page--;
-        }
-        else if (choice == ',')
-        {
-            if ((dir_page + 1) * MAX_ITEMS < total_dirs)
-                dir_page++;
-        }
-        else
-        {
-            int result = navigate_to_directory(dirs, total_dirs, choice);
-            if (result == 1)
-            {
+            case 'w':
+                if (chdir("..") != 0)
+                {
+                    perror("chdir");
+                    return -2;
+                }
                 total_dirs = get_items(dirs, files, &file_count);
                 dir_page = 0;
                 file_page = 0;
-            }
+                break;
+
+            case '.':
+                if (file_page > 0)
+                    file_page--;
+                break;
+
+            case '/':
+                if ((file_page + 1) * MAX_ITEMS < file_count)
+                    file_page++;
+                break;
+
+            case 'm':
+                if (dir_page > 0)
+                    dir_page--;
+                break;
+
+            case ',':
+                if ((dir_page + 1) * MAX_ITEMS < total_dirs)
+                    dir_page++;
+                break;
+
+            default:
+                int result = navigate_to_directory(dirs, total_dirs, choice);
+                if (result == 1)
+                {
+                    total_dirs = get_items(dirs, files, &file_count);
+                    dir_page = 0;
+                    file_page = 0;
+                }
+                break;
         }
     }
 
