@@ -236,7 +236,8 @@ int navigate_to_directory(char **dirs, int dir_count, char choice)
 
 int main()
 {
-    system("tput smcup");
+    if (isatty(STDIN_FILENO))
+        system("tput smcup");
 
     char **dirs = NULL;
     char **files = NULL;
@@ -261,10 +262,11 @@ int main()
         {
             case EXIT_KEY:
                 free_memory(dirs, files, dir_count, file_count);
-                system("tput rmcup");
                 char cwd[MAX_NAME_LEN];
                 if (getcwd(cwd, sizeof(cwd)) != NULL)
                     printf("%s\n", cwd);
+                if (isatty(STDIN_FILENO))
+                    system("tput rmcup");
                 return 0;
 
             case PARENT_KEY:
@@ -313,6 +315,7 @@ int main()
     }
 
     free_memory(dirs, files, dir_count, file_count);
-    system("tput rmcup");
+    if (isatty(STDIN_FILENO))
+        system("tput rmcup");
     return 0;
 }

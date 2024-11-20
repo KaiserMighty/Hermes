@@ -2,8 +2,6 @@
 
 new_dir=$(./hermes | tail -n 1)
 if [ -d "$new_dir" ]; then
-    cd "$new_dir" || exit
-    echo "Changed to directory: $new_dir"
-else
-    echo "Invalid directory: $new_dir"
+    echo "Hermes changed directory to: $new_dir"
+    cd "$new_dir"
 fi
