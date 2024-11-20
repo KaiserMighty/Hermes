@@ -261,17 +261,10 @@ int main()
         {
             case EXIT_KEY:
                 free_memory(dirs, files, dir_count, file_count);
+                system("tput rmcup");
                 char cwd[MAX_NAME_LEN];
                 if (getcwd(cwd, sizeof(cwd)) != NULL)
-                {
-                    FILE *file = fopen("/tmp/hermes_output.txt", "w");
-                    if (file)
-                    {
-                        fprintf(file, "%s\n", cwd);
-                        fclose(file);
-                    }   
-                }
-                system("tput rmcup");
+                    printf("%s\n", cwd);
                 return 0;
 
             case PARENT_KEY:
