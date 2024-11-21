@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <dirent.h>
-#include <fcntl.h>
 #include <unistd.h>
 #include <termios.h>
 
@@ -237,13 +236,8 @@ int navigate_to_directory(char **dirs, int dir_count, char choice)
 
 int main()
 {
-    int fd = open("/dev/fd/3", O_WRONLY);
-    if (fd == -1) {
-        perror("open");
-        return -1;
-    }
-
-    system("tput smcup");
+    if (isatty(STDOUT_FILENO))
+        system("tput smcup");
 
     char **dirs = NULL;
     char **files = NULL;
@@ -270,9 +264,9 @@ int main()
                 free_memory(dirs, files, dir_count, file_count);
                 char cwd[MAX_NAME_LEN];
                 if (getcwd(cwd, sizeof(cwd)) != NULL)
-                    dprintf(fd, "%s\n", cwd);
-                system("tput rmcup");
-                close(fd);
+                    printf("%s\n", cwd);
+                if (isatty(STDOUT_FILENO))
+                    system("tput rmcup");
                 return 0;
 
             case PARENT_KEY:
@@ -322,6 +316,5 @@ int main()
 
     free_memory(dirs, files, dir_count, file_count);
     system("tput rmcup");
-    close(fd);
     return 0;
 }
