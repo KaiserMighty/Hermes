@@ -51,6 +51,7 @@ void free_memory(char **dirs, char **files, int dir_count, int file_count)
     free(files);
 }
 
+// Program uses tput calls, need to send and read output without piping.
 int output_to_file(const char *final_directory)
 {
     FILE *file = fopen("/tmp/hermes_output", "w");

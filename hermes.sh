@@ -1,4 +1,5 @@
 #!/bin/bash
+# I am using a temp file instead of piping the output because the program uses tput calls.
 
 /usr/local/bin/hermes
 if [ -f /tmp/hermes_output ]; then

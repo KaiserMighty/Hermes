@@ -1,6 +1,11 @@
-# Hermes
+# Hermes Navigator
 An alternative to 'ls' and 'cd' for Linux.  
 Inspired by this [Digital Maker Video](https://www.youtube.com/watch?v=jvrDEKDhdB8).  
+The Hermes Navigator isn't particularly efficient at moving to known and frequently visited directories, nor is it intended to be. If you already know the directory you need to go to, using `cd` is the fastest.  
+However, Hermes is intended to give you an efficient way to explore new directories with minimal keyboard inputs.
+
+## Demonstration
+![Demonstration GIF](preview.gif)
 
 ## Usage
 After following the installation instructions below, you can use it anywhere by running this command:
@@ -54,4 +59,5 @@ PREV_PAGE_FILE_KEY - The key used to display the previous page of files.
 NEXT_PAGE_FILE_KEY - The key used to display the next page of files.
 ```
 
-## Demonstration
+## Porting the Program
+This program was made for bash. If you want to port the program for something else, you can write your own script that calls the program and reads the output file after executiong; reference hermes.sh to see how the program's lifecycle works. I made the bash script because if I ran the program from the terminal, it runs in a subprocess and changing the directory from inside the program will not affect the parent terminal. Therefore, the program writes the final directory to a temporary output file, which a script will need to read and change directories to from the parent terminal (for bash, this can be done by running a script with the `source` prefix).
