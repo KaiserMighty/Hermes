@@ -51,6 +51,18 @@ void free_memory(char **dirs, char **files, int dir_count, int file_count)
     free(files);
 }
 
+int output_to_file(const char *final_directory)
+{
+    FILE *file = fopen("/tmp/hermes_output", "w");
+    if (file == NULL)
+    {
+        perror("fopen");
+        return -1;
+    }
+    fprintf(file, "%s\n", final_directory);
+    fclose(file);
+}
+
 int get_items(char ***dirs, char ***files, int *dir_count, int *file_count)
 {
     struct dirent *entry;
@@ -236,8 +248,7 @@ int navigate_to_directory(char **dirs, int dir_count, char choice)
 
 int main()
 {
-    if (isatty(STDOUT_FILENO))
-        system("tput smcup");
+    system("tput smcup");
 
     char **dirs = NULL;
     char **files = NULL;
@@ -264,9 +275,8 @@ int main()
                 free_memory(dirs, files, dir_count, file_count);
                 char cwd[MAX_NAME_LEN];
                 if (getcwd(cwd, sizeof(cwd)) != NULL)
-                    printf("%s\n", cwd);
-                if (isatty(STDOUT_FILENO))
-                    system("tput rmcup");
+                    output_to_file(cwd);
+                system("tput rmcup");
                 return 0;
 
             case PARENT_KEY:

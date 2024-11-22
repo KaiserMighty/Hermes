@@ -28,8 +28,12 @@ chmod +x "$SCRIPT_INSTALL_PATH"
 echo "Made $SCRIPT_INSTALL_PATH executable."
 
 if ! grep -q "hermes()" ~/.bashrc; then
-    echo "Adding hermes function definition to ~/.bashrc..."
-    echo "hermes() { source $SCRIPT_INSTALL_PATH; }" >> ~/.bashrc
+    echo "Adding Hermes Navigator function to ~/.bashrc..."
+    cat <<EOF >>~/.bashrc
+# Hermes Navigator
+hermes() { source $SCRIPT_INSTALL_PATH; }
+EOF
+
 else
     echo "Function for hermes already exists in ~/.bashrc. Skipping..."
 fi

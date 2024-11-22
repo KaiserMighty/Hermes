@@ -25,11 +25,11 @@ else
     echo "Script $SCRIPT_FILE not found in $INSTALL_PATH. Skipping..."
 fi
 
-if grep -q "hermes()" ~/.bashrc; then
-    sed -i '/hermes()/,+1 d' ~/.bashrc
-    echo "hermes function removed from ~/.bashrc."
+if grep -q "# Hermes Navigator" ~/.bashrc; then
+    sed -i '/# Hermes Navigator/,+2 d' ~/.bashrc
+    echo "Removed function from ~/.bashrc."
 else
-    echo "hermes function not found in ~/.bashrc. Skipping..."
+    echo "Function not found in ~/.bashrc. Skipping..."
 fi
 
 echo "To apply the uninstallation changes, please run the following command:"
