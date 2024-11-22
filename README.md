@@ -41,7 +41,7 @@ source ~/.bashrc
 ```
 
 ## Configuration
-If you wish to change the spacing between contents or even the controls of the program, you can edit the defines at the top of `hermes.c`.  
+My personal devices use Windows, and have Windows Subsystem for Linux installed for dev work. I use Linux through the small command prompt sized window WSL starts in; the spacings and layout of the program (by default) are designed for this window size. If you wish to change the spacing between contents or even the controls of the program, you can edit the defines at the top of `hermes.c`.  
 Running the installation commands after any edits will automatically compile and place the edited program in the correct locations such that you can start using it right away.
 
 Here is a description of all defines at the top of the source file:
