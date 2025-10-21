@@ -11,9 +11,10 @@
 #define COLUMN_WIDTH 50
 #define PAGE_SIZE 20
 
-#define NAV_KEYMAP "ertyuiopasdfghjklzxc"
+#define NAV_KEYMAP "rtyuiopasdfghjklzxc"
 #define EXIT_KEY 'q'
-#define PARENT_KEY 'w'
+#define RETURN_KEY 'w'
+#define PARENT_KEY 'e'
 #define PREV_PAGE_DIR_KEY '['
 #define NEXT_PAGE_DIR_KEY ']'
 #define PREV_PAGE_FILE_KEY ';'
@@ -146,13 +147,14 @@ void display_items(char **dirs, char **files, int dir_count, int file_count, int
         printf("%s\n\n", cwd);
 
     printf("%c) %-50s", EXIT_KEY, "Exit Here");
-    printf("%c) %s\n", PARENT_KEY, "Parent Directory");
+    printf("%c) %s\n", RETURN_KEY, "Return to Start");
+    printf("%c) %-50s", PARENT_KEY, "Parent Directory");
 
     // Print Directories
     int dir_start_index = dir_page * PAGE_SIZE;
     int dir_end_index = dir_start_index + PAGE_SIZE;
     int dir_print_count = 0;
-    for (int i = dir_start_index; i < dir_count && i < dir_end_index; i++)
+    for (int i = dir_start_index+1; i < dir_count && i < dir_end_index; i++)
     {
         int key_index = i - dir_start_index;
         if (key_index < strlen(NAV_KEYMAP))
@@ -257,6 +259,8 @@ int main()
     int file_count = 0;
     int dir_page = 0;
     int file_page = 0;
+    char startdir[MAX_NAME_LEN];
+    getcwd(startdir, sizeof(startdir));
 
     if (get_items(&dirs, &files, &dir_count, &file_count) == -1)
     {
@@ -277,6 +281,13 @@ int main()
                 char cwd[MAX_NAME_LEN];
                 if (getcwd(cwd, sizeof(cwd)) != NULL)
                     output_to_file(cwd);
+                system("tput rmcup");
+                return 0;
+
+            case RETURN_KEY:
+                free_memory(dirs, files, dir_count, file_count);
+                if (startdir != NULL)
+                    output_to_file(startdir);
                 system("tput rmcup");
                 return 0;
 
